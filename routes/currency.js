@@ -51,7 +51,12 @@ router.get('/', async (req, res) => {
       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=RUB&To=UZS',
     ];
 
-    const exchangeRates = {};
+    // const exchangeRates = {};
+    const exchangeRates = {
+      usd_uzs: null,
+      eur_uzs: null,
+      rub_uzs: null
+    };
 
     for (const url of urls) {
       const response = await axios.get(url);
@@ -62,7 +67,16 @@ router.get('/', async (req, res) => {
       const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim(); // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
 
       // Keyingi URL uchun exchangeRates obyektiga qo'shish
-      exchangeRates[url] = rate;
+      // exchangeRates[url] = rate;
+
+      if (url.includes('USD')) {
+        exchangeRates.usd_uzs = rate;
+      } else if (url.includes('EUR')) {
+        exchangeRates.eur_uzs = rate;
+      } else if (url.includes('RUB')) {
+        exchangeRates.rub_uzs = rate;
+      }
+
     }
 
     res.json(exchangeRates);
