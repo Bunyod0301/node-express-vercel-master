@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
       const $ = cheerio.load(html);
 
       // XPath orqali ma'lumot olish
-      const rate = $('p:contains("1 USD =")').text(); // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
+      const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim(); // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
 
       // Keyingi URL uchun exchangeRates obyektiga qo'shish
       exchangeRates[url] = rate;
@@ -70,9 +70,5 @@ router.get('/', async (req, res) => {
     res.json({ error: 'Xatolik yuz berdi' });
   }
 });
-
-
-
-
 
 module.exports = router;
