@@ -43,69 +43,31 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 
-// router.get('/', async (req, res) => {
-//   try {
-//     const urls = [
-//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=UZS',
-//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=EUR&To=UZS',
-//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=RUB&To=UZS',
-//     ];
-
-//     // const exchangeRates = {};
-//     const exchangeRates = {
-//       usd_uzs: null,
-//       eur_uzs: null,
-//       rub_uzs: null
-//     };
-
-//     for (const url of urls) {
-//       const response = await axios.get(url);
-//       const html = response.data;
-//       const $ = cheerio.load(html);
-
-//       // XPath orqali ma'lumot olish
-//       const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim(); // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
-
-//       // Keyingi URL uchun exchangeRates obyektiga qo'shish
-//       // exchangeRates[url] = rate;
-
-//       if (url.includes('USD')) {
-//         exchangeRates.usd_uzs = rate;
-//       } else if (url.includes('EUR')) {
-//         exchangeRates.eur_uzs = rate;
-//       } else if (url.includes('RUB')) {
-//         exchangeRates.rub_uzs = rate;
-//       }
-
-//     }
-
-//     res.json(exchangeRates);
-//   } catch (error) {
-//     res.json({ error: 'Xatolik yuz berdi' });
-//   }
-// });
-
-
-let exchangeRates = {
-  usd_uzs: null,
-  eur_uzs: null,
-  rub_uzs: null,
-};
-
-async function fetchExchangeRates() {
+router.get('/', async (req, res) => {
   try {
     const urls = [
       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=UZS',
       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=EUR&To=UZS',
       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=RUB&To=UZS',
-    ]
+    ];
+
+    // const exchangeRates = {};
+    const exchangeRates = {
+      usd_uzs: null,
+      eur_uzs: null,
+      rub_uzs: null
+    };
+
     for (const url of urls) {
       const response = await axios.get(url);
       const html = response.data;
       const $ = cheerio.load(html);
 
       // XPath orqali ma'lumot olish
-      const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim() // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
+      const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim(); // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
+
+      // Keyingi URL uchun exchangeRates obyektiga qo'shish
+      // exchangeRates[url] = rate;
 
       if (url.includes('USD')) {
         exchangeRates.usd_uzs = rate;
@@ -114,22 +76,63 @@ async function fetchExchangeRates() {
       } else if (url.includes('RUB')) {
         exchangeRates.rub_uzs = rate;
       }
+
     }
+
+    res.json(exchangeRates);
   } catch (error) {
-    console.error('Xatolik yuz berdi:', error);
+    res.json({ error: 'Xatolik yuz berdi' });
   }
-}
-
-// Avtomatik yangilash uchun setInterval
-setInterval(fetchExchangeRates, 300000); // 5 minut = 300000 millisekund
-
-router.get('/', (req, res) => {
-  res.json(exchangeRates);
 });
 
-// Birinchi marta boshlash uchun valyuta kurslarini olish
-fetchExchangeRates();
+
+// let exchangeRates = {
+//   usd_uzs: null,
+//   eur_uzs: null,
+//   rub_uzs: null,
+// };
+
+// async function fetchExchangeRates() {
+//   try {
+//     const urls = [
+//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=UZS',
+//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=EUR&To=UZS',
+//       'https://www.xe.com/currencyconverter/convert/?Amount=1&From=RUB&To=UZS',
+//     ]
+//     for (const url of urls) {
+//       const response = await axios.get(url);
+//       const html = response.data;
+//       const $ = cheerio.load(html);
+
+//       // XPath orqali ma'lumot olish
+//       const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim()
+//       // XPath izlash, o'zgartiring kerakli ifoda bo'lsa
+
+//       if (url.includes('USD')) {
+//         exchangeRates.usd_uzs = rate;
+//       } else if (url.includes('EUR')) {
+//         exchangeRates.eur_uzs = rate;
+//       } else if (url.includes('RUB')) {
+//         exchangeRates.rub_uzs = rate;
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Xatolik yuz berdi:', error);
+//   }
+// }
+
+// // Avtomatik yangilash uchun setInterval
+// setInterval(fetchExchangeRates, 300000);
+// // setInterval(()=>{
+// //   console.log("hello");
+// // }, 1000); // 5 minut = 300000 millisekund
+
+// router.get('/', (req, res) => {
+//   res.json(exchangeRates);
+// });
+
+// // Birinchi marta boshlash uchun valyuta kurslarini olish
+// fetchExchangeRates();
 
 
 module.exports = router;
-// const rate = $('#__next > div:nth-child(3) > div.fluid-container__BaseFluidContainer-sc-qoidzu-0.cXGelU > section > div:nth-child(2) > div > main > div > div:nth-child(2) > div:nth-child(1) > p.result__BigRate-sc-1bsijpp-1.dPdXSB').text().replace("Uzbekistani Sums", "").trim()
